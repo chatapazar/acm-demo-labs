@@ -4,5 +4,5 @@ metadata:
   name: web-app-channel
   namespace: web-app
 spec:
-  pathname: 'https://github.com/open-cluster-management/labs.git'
+  pathname: 'https://github.com/chatapazar/labs.git'
   type: GitHub
