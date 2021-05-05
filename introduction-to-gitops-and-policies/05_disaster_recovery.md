@@ -5,7 +5,7 @@ In this use case we are going to define the deployment of our application as fol
 1. We always want a single replica of our application running across a set of clusters
 2. If the cluster hosting that single replica goes down, another one should deploy the application
 
-For this use case we're going to create a new `PlacementRule` that matches the clusters labeled as `finance: dev`, we will add this new label to clusters named `managed-cluster1-dev` and `managed-cluster2-prod`. This new `PlacementRule` will include only one of the clusters
+For this use case we're going to create a new `PlacementRule` that matches the clusters labeled as `finance: dev`, we will add this new label to clusters named `cckcluster01` and `cckcluster02`. This new `PlacementRule` will include only one of the clusters
 since we defined `clusterReplicas: 1` within the `PlacementRule`.
 
 1. To avoid app creation collisions we are going to delete previous subscriptions and applications
@@ -21,17 +21,17 @@ since we defined `clusterReplicas: 1` within the `PlacementRule`.
 
     ~~~sh
     NAME                    HUB ACCEPTED   MANAGED CLUSTER URLS   JOINED   AVAILABLE   AGE
-    managed-cluster1-dev    true                                  True     True        1h6m
-    managed-cluster2-prod   true                                  True     True        1h8m
+    cckcluster01    true                                  True     True        1h6m
+    cckcluster02   true                                  True     True        1h8m
     ~~~
 3. Label the clusters
 
     > ![TIP](assets/tip-icon.png) **NOTE:** We are using the command line, but labeling can be done using the ACM WebUI as well
     ~~~sh
     # Patch development cluster
-    oc --context hubcluster patch managedcluster managed-cluster1-dev -p '{"metadata":{"labels":{"finance":"dev"}}}' --type=merge
+    oc --context hubcluster patch managedcluster cckcluster01 -p '{"metadata":{"labels":{"finance":"dev"}}}' --type=merge
     # Patch production cluster
-    oc --context hubcluster patch managedcluster managed-cluster2-prod -p '{"metadata":{"labels":{"finance":"dev"}}}' --type=merge
+    oc --context hubcluster patch managedcluster cckcluster02 -p '{"metadata":{"labels":{"finance":"dev"}}}' --type=merge
     ~~~
 4. Create the new `PlacementRule`
 
@@ -45,16 +45,16 @@ since we defined `clusterReplicas: 1` within the `PlacementRule`.
     ~~~
 
     ~~~sh
-    map[clusterName:managed-cluster1-dev clusterNamespace:managed-cluster1-dev]
+    map[clusterName:cckcluster01 clusterNamespace:cckcluster01]
     ~~~
-    > ![WARNING](assets/warning-icon.png) **NOTE:** The application will be deployed to `managed-cluster1-dev` cluster only based on the output above
+    > ![WARNING](assets/warning-icon.png) **NOTE:** The application will be deployed to `cckcluster01` cluster only based on the output above
 6. Create the `Subscription`
 
     ~~~sh
     oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/10_subscription-finance.yaml
     ~~~
 
-Based on the `PlacementRule` decission, the application should be running on the `managed-cluster1-dev` cluster and not in `managed-cluster2-prod` cluster:
+Based on the `PlacementRule` decission, the application should be running on the `cckcluster01` cluster and not in `cckcluster02` cluster:
 
 > ![TIP](assets/tip-icon.png) **NOTE:** We're using `oc` tool in order to verify the app deployment. Feel free to review the application on the ACM Console as well.
 
@@ -83,12 +83,12 @@ oc --context cluster2 -n gitops-apps get pods,svc,route
 No resources found in gitops-apps namespace.
 ~~~
 
-Now we are going to simulate that we lose one of the `finance: dev` clusters, in order to do so, we are going to remove the `finance: dev` label from cluster named `managed-cluster1-dev`, that way the application should be deployed onto cluster named `managed-cluster2-prod`.
+Now we are going to simulate that we lose one of the `finance: dev` clusters, in order to do so, we are going to remove the `finance: dev` label from cluster named `cckcluster01`, that way the application should be deployed onto cluster named `cckcluster02`.
 
-1. Remove `finance: dev` label from cluster named `managed-cluster1-dev`:
+1. Remove `finance: dev` label from cluster named `cckcluster01`:
 
     ~~~sh
-    oc --context hubcluster patch managedcluster managed-cluster1-dev -p '{"metadata":{"labels":{"finance":null}}}' --type=merge
+    oc --context hubcluster patch managedcluster cckcluster01 -p '{"metadata":{"labels":{"finance":null}}}' --type=merge
     ~~~
 2. If we look now at the `PlacementRule` matches:
 
@@ -97,10 +97,10 @@ Now we are going to simulate that we lose one of the `finance: dev` clusters, in
     ~~~
 
     ~~~sh
-    map[clusterName:managed-cluster2-prod clusterNamespace:managed-cluster2-prod]
+    map[clusterName:cckcluster02 clusterNamespace:cckcluster02]
     ~~~
 
-The application should be moved to cluster named `managed-cluster2-prod` and removed from cluster named `managed-cluster1-dev`.
+The application should be moved to cluster named `cckcluster02` and removed from cluster named `cckcluster01`.
 
 > ![TIP](assets/tip-icon.png) **NOTE:** We're using `oc` tool in order to verify the app deployment. Feel free to review the application on the ACM Console as well.
 
