@@ -75,5 +75,5 @@ backend app
     mode http 
         server cluster1 pacman.apps.cckcluster01.sandbox1865.opentlc.com:80 check
         server cluster2 pacman.apps.cckcluster02.sandbox1865.opentlc.com:80 check
-        server cluster3 pacman.apps.cckcluster03.sandbox1865.opentlc.com:80 check
+        server <server3_name> <server3_pacman_route>:<route_port> check
 
