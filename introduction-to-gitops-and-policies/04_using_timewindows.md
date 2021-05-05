@@ -46,7 +46,7 @@ Back to the example:
 1. To avoid app creation collisions we are going to delete previous subscriptions and applications
 
     ~~~sh
-    oc --context hub delete -f https://github.com/RHsyseng/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/07_subscription-all-okay.yaml
+    oc --context hubcluster delete -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/07_subscription-all-okay.yaml
     ~~~
 
 > ![WARNING](assets/warning-icon.png) **NOTE:** The TimeWindow below has `Friday`, `Saturday` and `Sunday` configured as active days, make sure to modify it (change the active days) as needed so you can see the effect.
@@ -54,13 +54,13 @@ Back to the example:
 2. Create the `Application` and the `Subscription` for deploying the production release of our application to our `production` clusters (labeled as `env: pro`)
 
     ~~~sh
-    oc --context hub create -f https://github.com/RHsyseng/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/08_subscription-timewindow.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/08_subscription-timewindow.yaml
     ~~~
 
 3. As mentioned before, edit the subscription so the TimeWindow matches your current schedule if needed.
 
     ~~~sh
-    oc --context hub -n gitops-apps edit subscriptions.apps.open-cluster-management.io reversewords-prod-app-subscription
+    oc --context hubcluster -n gitops-apps edit subscriptions.apps.open-cluster-management.io reversewords-prod-app-subscription
     ~~~
 
 Now we should have our application running on the production cluster:
