@@ -87,26 +87,26 @@ Let's explore the different ACM components we will be using in this example: `Ch
 1. Create a `Namespace` where we will store the ACM manifests for the application
 
     ~~~sh
-    oc --context hub create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/00_namespace.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/00_namespace.yaml
     ~~~
 2. Create a `Channel` defining our GitHub repository as the source of truth for the application
 
     > ![TIP](assets/tip-icon.png) **NOTE:** In the following examples we will use a `Git` Channel, there are more channel types available. You can find them in the docs [here](https://access.redhat.com/documentation/en-us/red_hat_advanced_cluster_management_for_kubernetes/2.0/html/manage_applications/managing-applications#channel-samples)
 
     ~~~sh
-    oc --context hub create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/01_channel.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/01_channel.yaml
     ~~~
 3. Create a `PlacementRule` matching our `development` clusters (labeled as `environment: dev`)
 
     > ![TIP](assets/tip-icon.png) **NOTE:** In our `PlacementRule` we are defining `clusterReplicas: 1`, that means that even if we have more than 1 cluster that matches the labels defined in the `PlacementRule`, the `PlacementRule` will only return 1 of them back
 
     ~~~sh
-    oc --context hub create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/02_placement_rule-dev.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/02_placement_rule-dev.yaml
     ~~~
 4. Create an `Application` and a `Subscription` for deploying our app onto the `development` clusters
 
     ~~~sh
-    oc --context hub create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/03_subscription-dev.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/03_subscription-dev.yaml
     ~~~
 
 Let's explore the status for our `PlacementRule` and `Subscription`:
@@ -114,7 +114,7 @@ Let's explore the status for our `PlacementRule` and `Subscription`:
 1. Get `PlacementRule` matched clusters
 
     ~~~sh
-    oc --context hub -n gitops-apps get placementrule development-clusters -o yaml
+    oc --context hubcluster -n gitops-apps get placementrule development-clusters -o yaml
     ~~~
     > As you can see in the `status` we are matching cluster named `managed-cluster1-dev` which is our development cluster
     ~~~yaml
@@ -148,7 +148,7 @@ Let's explore the status for our `PlacementRule` and `Subscription`:
 2. Get Subscription status
     
     ~~~sh
-    oc --context hub -n gitops-apps get subscription reversewords-dev-app-subscription -o yaml
+    oc --context hubcluster -n gitops-apps get subscription reversewords-dev-app-subscription -o yaml
     ~~~
     > As you can see in the `status` we are sending the application to the cluster named managed-cluster1-dev and the subscription is propagated to the cluster already
     ~~~yaml
@@ -257,12 +257,12 @@ As we already created the `Namespace` and the `Channel` for the previous use cas
     > ![TIP](assets/tip-icon.png) **NOTE:** In our `PlacementRule` we are defining `clusterReplicas: 1`, that means that even if we have more than 1 cluster that matches the labels defined in the `PlacementRule`, the `PlacementRule` will only return 1 of them back
 
     ~~~sh
-    oc --context hub create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/04_placement_rule-prod.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/04_placement_rule-prod.yaml
     ~~~
 2. Create an `Application` and a `Subscription` for deploying our app onto the `production` clusters
 
     ~~~sh
-    oc --context hub create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/05_subscription-prod.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/05_subscription-prod.yaml
     ~~~
 
 Let's explore the `Application` and `Subscription` manifests.
@@ -314,18 +314,18 @@ In this use case we are going to deploy the sample application to all clusters t
 1. To avoid app creation collisions we are going to delete previous subscriptions and applications
 
     ~~~sh
-    oc --context hub delete -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/03_subscription-dev.yaml
-    oc --context hub delete -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/05_subscription-prod.yaml
+    oc --context hubcluster delete -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/03_subscription-dev.yaml
+    oc --context hubcluster delete -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/05_subscription-prod.yaml
     ~~~
 2. Create a `PlacementRule` matching all healthy clusters (reported back as `ManagedClusterConditionAvailable - True`)
 
     ~~~sh
-    oc --context hub create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/06_placement_rule-all-okay.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/06_placement_rule-all-okay.yaml
     ~~~
 3. Create the `Application` and the `Subscription` for deploying the production release of our application to all healthy clusters
 
     ~~~sh
-    oc --context hub create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/07_subscription-all-okay.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/07_subscription-all-okay.yaml
     ~~~
 
 Now we should have our application running on the `development` and `production` clusters since all our clusters are healthy
