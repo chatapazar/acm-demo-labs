@@ -3,4 +3,4 @@ kind: Route
 metadata:
   name: the-route
 spec:
-  host: web-app.apps.cckcluster02.sandbox1118.opentlc.com
+  host: web-app.apps.cckcluster02.sandbox1865.opentlc.com
