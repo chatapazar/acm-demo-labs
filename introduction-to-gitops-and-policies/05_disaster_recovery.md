@@ -11,12 +11,12 @@ since we defined `clusterReplicas: 1` within the `PlacementRule`.
 1. To avoid app creation collisions we are going to delete previous subscriptions and applications
 
     ~~~sh
-    oc --context hub delete -f https://github.com/RHsyseng/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/08_subscription-timewindow.yaml
+    oc --context hubcluster delete -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/08_subscription-timewindow.yaml
     ~~~
 2. List available clusters
 
     ~~~sh
-    oc --context hub get managedcluster
+    oc --context hubcluster get managedcluster
     ~~~
 
     ~~~sh
@@ -29,19 +29,19 @@ since we defined `clusterReplicas: 1` within the `PlacementRule`.
     > ![TIP](assets/tip-icon.png) **NOTE:** We are using the command line, but labeling can be done using the ACM WebUI as well
     ~~~sh
     # Patch development cluster
-    oc --context hub patch managedcluster managed-cluster1-dev -p '{"metadata":{"labels":{"finance":"dev"}}}' --type=merge
+    oc --context hubcluster patch managedcluster managed-cluster1-dev -p '{"metadata":{"labels":{"finance":"dev"}}}' --type=merge
     # Patch production cluster
-    oc --context hub patch managedcluster managed-cluster2-prod -p '{"metadata":{"labels":{"finance":"dev"}}}' --type=merge
+    oc --context hubcluster patch managedcluster managed-cluster2-prod -p '{"metadata":{"labels":{"finance":"dev"}}}' --type=merge
     ~~~
 4. Create the new `PlacementRule`
 
     ~~~sh
-    oc --context hub create -f https://github.com/RHsyseng/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/09_placement_rule-finance.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/09_placement_rule-finance.yaml
     ~~~
 5. Before creating the `Subscription` let's check which cluster is matching the `PlacementRule` we just created
 
     ~~~sh
-    oc --context hub -n gitops-apps get placementrule finance-dev-clusters -o jsonpath='{.status.decisions[]}'
+    oc --context hubcluster -n gitops-apps get placementrule finance-dev-clusters -o jsonpath='{.status.decisions[]}'
     ~~~
 
     ~~~sh
@@ -51,7 +51,7 @@ since we defined `clusterReplicas: 1` within the `PlacementRule`.
 6. Create the `Subscription`
 
     ~~~sh
-    oc --context hub create -f https://github.com/RHsyseng/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/10_subscription-finance.yaml
+    oc --context hubcluster create -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/10_subscription-finance.yaml
     ~~~
 
 Based on the `PlacementRule` decission, the application should be running on the `managed-cluster1-dev` cluster and not in `managed-cluster2-prod` cluster:
@@ -60,7 +60,7 @@ Based on the `PlacementRule` decission, the application should be running on the
 
 ~~~sh
 # Review app on development cluster
-oc --context managed-dev -n gitops-apps get pods,svc,route
+oc --context cluster1 -n gitops-apps get pods,svc,route
 ~~~
 
 ~~~sh
@@ -76,7 +76,7 @@ route.route.openshift.io/reverse-words   reverse-words-gitops-apps.apps.cluster-
 
 ~~~sh
 # Review app on production cluster
-oc --context managed-prod -n gitops-apps get pods,svc,route
+oc --context cluster2 -n gitops-apps get pods,svc,route
 ~~~
 
 ~~~sh
@@ -88,12 +88,12 @@ Now we are going to simulate that we lose one of the `finance: dev` clusters, in
 1. Remove `finance: dev` label from cluster named `managed-cluster1-dev`:
 
     ~~~sh
-    oc --context hub patch managedcluster managed-cluster1-dev -p '{"metadata":{"labels":{"finance":null}}}' --type=merge
+    oc --context hubcluster patch managedcluster managed-cluster1-dev -p '{"metadata":{"labels":{"finance":null}}}' --type=merge
     ~~~
 2. If we look now at the `PlacementRule` matches:
 
     ~~~sh
-    oc --context hub -n gitops-apps get placementrule finance-dev-clusters -o jsonpath='{.status.decisions[]}'
+    oc --context hubcluster -n gitops-apps get placementrule finance-dev-clusters -o jsonpath='{.status.decisions[]}'
     ~~~
 
     ~~~sh
@@ -106,7 +106,7 @@ The application should be moved to cluster named `managed-cluster2-prod` and rem
 
 ~~~sh
 # Review app on development cluster
-oc --context managed-dev -n gitops-apps get pods,svc,route
+oc --context cluster1 -n gitops-apps get pods,svc,route
 ~~~
 
 ~~~sh
@@ -115,7 +115,7 @@ No resources found in gitops-apps namespace.
 
 ~~~sh
 # Review app on production cluster
-oc --context managed-prod -n gitops-apps get pods,svc,route
+oc --context cluster2 -n gitops-apps get pods,svc,route
 ~~~
 
 ~~~sh

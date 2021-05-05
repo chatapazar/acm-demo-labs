@@ -69,7 +69,7 @@ Now we should have our application running on the production cluster:
 
 ~~~sh
 date
-oc --context managed-prod -n gitops-apps get pods,svc,route
+oc --context cluster2 -n gitops-apps get pods,svc,route
 ~~~
 
 ~~~sh
