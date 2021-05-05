@@ -118,19 +118,7 @@ Let's explore the status for our `PlacementRule` and `Subscription`:
     ~~~
     > As you can see in the `status` we are matching cluster named `managed-cluster1-dev` which is our development cluster
     ~~~yaml
-    apiVersion: apps.open-cluster-management.io/v1
-    kind: PlacementRule
-    metadata:
-      annotations:
-        open-cluster-management.io/user-group: c3lzdGVtOmNsdXN0ZXItYWRtaW5zLHN5c3RlbTphdXRoZW50aWNhdGVk
-        open-cluster-management.io/user-identity: a3ViZTphZG1pbg==
-      creationTimestamp: "2020-07-16T14:31:06Z"
-      generation: 1
-      name: development-clusters
-      namespace: gitops-apps
-      resourceVersion: "78154"
-      selfLink: /apis/apps.open-cluster-management.io/v1/namespaces/gitops-apps/placementrules/development-clusters
-      uid: 367bfddb-2e74-4f59-adf3-2511e7fd82b7
+    ...
     spec:
       clusterConditions:
       - status: "True"
@@ -142,8 +130,8 @@ Let's explore the status for our `PlacementRule` and `Subscription`:
           environment: dev
     status:
       decisions:
-      - clusterName: managed-cluster1-dev
-        clusterNamespace: managed-cluster1-dev
+      - clusterName: cckcluster01
+        clusterNamespace: cckcluster01
     ~~~
 2. Get Subscription status
     
@@ -152,26 +140,6 @@ Let's explore the status for our `PlacementRule` and `Subscription`:
     ~~~
     > As you can see in the `status` we are sending the application to the cluster named managed-cluster1-dev and the subscription is propagated to the cluster already
     ~~~yaml
-    apiVersion: apps.open-cluster-management.io/v1
-    kind: Subscription
-    metadata:
-      annotations:
-        apps.open-cluster-management.io/deployables: gitops-apps/reversewords-dev-app-subscription-apps-reversewords-reverse-words-deployment,gitops-apps/reversewords-dev-app-subscription-apps-reversewords-reverse-words-route,gitops-apps/reversewords-dev-app-subscription-apps-reversewords-base-reverse-words-stage-namespace,gitops-apps/reversewords-dev-app-subscription-apps-reversewords-overlays-reverse-words-deployment,gitops-apps/reversewords-dev-app-subscription-apps-reversewords-reverse-words-stage-namespace,gitops-apps/reversewords-dev-app-subscription-apps-reversewords-reverse-words-service
-        apps.open-cluster-management.io/git-branch: stage
-        apps.open-cluster-management.io/git-commit: faca1df26bd782135a5f95415e220af99112ba07
-        apps.open-cluster-management.io/git-path: apps/reversewords/
-        apps.open-cluster-management.io/topo: deployable//Namespace//reverse-words-stage/0,deployable//Deployment//reverse-words/-1,deployable//Namespace//reverse-words-stage/0,deployable//Service/reverse-words-stage/reverse-words/0,deployable//Deployment/reverse-words-stage/reverse-words/1,deployable//Route/reverse-words-stage/reverse-words/0
-        open-cluster-management.io/user-group: c3lzdGVtOmNsdXN0ZXItYWRtaW5zLHN5c3RlbTphdXRoZW50aWNhdGVk
-        open-cluster-management.io/user-identity: a3ViZTphZG1pbg==
-      creationTimestamp: "2020-07-16T14:33:14Z"
-      generation: 1
-      labels:
-        app: reversewords-dev-app
-      name: reversewords-dev-app-subscription
-      namespace: gitops-apps
-      resourceVersion: "79260"
-      selfLink: /apis/apps.open-cluster-management.io/v1/namespaces/gitops-apps/subscriptions/reversewords-dev-app-subscription
-      uid: 1cdff612-ba9d-4212-bf08-035d250d02f9
     spec:
       channel: gitops-apps/acm-gitops-github
       placement:
@@ -179,10 +147,11 @@ Let's explore the status for our `PlacementRule` and `Subscription`:
           kind: PlacementRule
           name: development-clusters
     status:
-      lastUpdateTime: "2020-07-16T14:33:24Z"
+      lastUpdateTime: "2021-05-05T14:02:16Z"
+      message: cckcluster01:Active
       phase: Propagated
       statuses:
-        managed-cluster1-dev: {}
+        cckcluster01: {}
     ~~~
 
 Now we should have our application running on the development cluster, we are going to explore the deployed bits using three methods:
@@ -192,18 +161,18 @@ Now we should have our application running on the development cluster, we are go
     > ![TIP](assets/tip-icon.png) **NOTE:** It could take a few moments (up to 2 minutes) for the Subscription to be propagated to the managed cluster.
 
     ~~~sh
-    oc --context managed-dev -n gitops-apps get pods,svc,route
+    oc --context cluster1 -n gitops-apps get pods,svc,route
     ~~~
 
     ~~~sh
     NAME                                READY   STATUS    RESTARTS   AGE
-    pod/reverse-words-7dd94446c-tbbt8   1/1     Running   0          37s
+    pod/reverse-words-68c49dddf-mp9fw   1/1     Running   0          4m24s
 
-    NAME                    TYPE        CLUSTER-IP      EXTERNAL-IP   PORT(S)    AGE
-    service/reverse-words   ClusterIP   172.30.137.40   <none>        8080/TCP   102s
+    NAME                    TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)    AGE
+    service/reverse-words   ClusterIP   172.30.89.21   <none>        8080/TCP   4m23s
 
-    NAME                                     HOST/PORT                                                         PATH   SERVICES        PORT   TERMINATION   WILDCARD
-    route.route.openshift.io/reverse-words   reverse-words-gitops-apps.apps.cluster-6e02.red.osp.opentlc.com          reverse-words   8080                 None
+    NAME                                     HOST/PORT                                                             PATH   SERVICES        PORT   TERMINATION   WILDCARD
+    route.route.openshift.io/reverse-words   reverse-words-gitops-apps.apps.cckcluster01.sandbox1865.opentlc.com          reverse-words   8080                 None
     ~~~
 2. Using the OCP Console
     > ![TIP](assets/tip-icon.png) **NOTE:** From ACM WebUI under `Clusters` view you can click on the three dots next to the cluster name you want to access and click on `Launch to cluster` in order to get to the OCP Cluster Console directly
@@ -227,7 +196,7 @@ Now we should have our application running on the development cluster, we are go
 We can see that the application was not deployed to production cluster (as expected):
 
 ~~~sh
-oc --context managed-prod -n gitops-apps get pods,svc,route
+oc --context cluster2 -n gitops-apps get pods,svc,route
 ~~~
 
 ~~~sh
@@ -237,7 +206,7 @@ No resources found in gitops-apps namespace.
 We can now access the deployed application:
 
 ~~~sh
-curl http://$(oc --context managed-dev -n gitops-apps get route reverse-words -o jsonpath='{.status.ingress[0].host}')
+curl http://$(oc --context cluster1 -n gitops-apps get route reverse-words -o jsonpath='{.status.ingress[0].host}')
 ~~~
 
 ~~~sh
@@ -281,7 +250,7 @@ Now we should have our application running on the production cluster:
 > ![WARNING](assets/warning-icon.png) **NOTE:** It could take a few moments (up to 2 minutes) for the Subscription to be propagated to the managed cluster.
 
 ~~~sh
-oc --context managed-prod -n gitops-apps get pods,svc,route
+oc --context cluster2 -n gitops-apps get pods,svc,route
 ~~~
 
 ~~~sh
@@ -298,7 +267,7 @@ route.route.openshift.io/reverse-words   reverse-words-gitops-apps.apps.cluster-
 We can now access the deployed application:
 
 ~~~sh
-curl http://$(oc --context managed-prod -n gitops-apps get route reverse-words -o jsonpath='{.status.ingress[0].host}')
+curl http://$(oc --context cluster2 -n gitops-apps get route reverse-words -o jsonpath='{.status.ingress[0].host}')
 ~~~
 
 ~~~sh
@@ -336,7 +305,7 @@ Now we should have our application running on the `development` and `production`
 
 ~~~sh
 # Get data from the managed dev cluster
-oc --context managed-dev -n gitops-apps get pods,svc,route
+oc --context cluster1 -n gitops-apps get pods,svc,route
 ~~~
 
 ~~~sh
@@ -352,7 +321,7 @@ route.route.openshift.io/reverse-words   reverse-words-gitops-apps.apps.cluster-
 
 ~~~sh
 # Get data from the managed prod cluster
-oc --context managed-prod -n gitops-apps get pods,svc,route
+oc --context cluster2 -n gitops-apps get pods,svc,route
 ~~~
 
 ~~~sh
@@ -370,7 +339,7 @@ We can now access our applications and see how we're deploying the production re
 
 ~~~sh
 # Get Development App
-curl http://$(oc --context managed-dev -n gitops-apps get route reverse-words -o jsonpath='{.status.ingress[0].host}')
+curl http://$(oc --context cluster1 -n gitops-apps get route reverse-words -o jsonpath='{.status.ingress[0].host}')
 ~~~
 
 ~~~sh
@@ -379,7 +348,7 @@ Reverse Words Release: Production release v0.0.2. App version: v0.0.2
 
 ~~~sh
 # Get Production App
-curl http://$(oc --context managed-prod -n gitops-apps get route reverse-words -o jsonpath='{.status.ingress[0].host}')
+curl http://$(oc --context cluster2 -n gitops-apps get route reverse-words -o jsonpath='{.status.ingress[0].host}')
 ~~~
 
 ~~~sh
