@@ -1,6 +1,9 @@
 # Show Migrate From Dev to Prod
 
 Reuse reversewords-finance-app
+
+add label finance:prod to cluster2 from ACM UI
+
 add new replacement rule
 
 ~~~sh
