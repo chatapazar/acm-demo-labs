@@ -15,3 +15,4 @@ We will be exploring different use cases, each use case will have a dedicated se
 * [6 - Infrastructure as Code](./06_infrastructure_as_code.md)
 * [7 - Introduction to Policies on ACM](./07_introduction_to_policies.md)
 * [8 - Applying Policies](./08_applying_policies.md)
+* [9 - Show Migrate Finance Dev to Prod](./09_migrate.md)
