@@ -32,3 +32,7 @@ git add *
 git commit -am 'Scale back cluster1 and cluster2 to 1'
 # Push your commits to the git repository
 git push origin master
+
+for cluster in cluster1 cluster2 cluster3;do echo "*** $cluster ***"; oc get deployment --context $cluster -n pacman;done
+
+canary deployment with lab9
