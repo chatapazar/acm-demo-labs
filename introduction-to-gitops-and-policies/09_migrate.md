@@ -2,7 +2,11 @@
 
 Reuse reversewords-finance-app
 
-add label finance:prod to cluster2 from ACM UI
+add label finance:prod to cluster1 or cluster2 from ACM UI or oc command
+
+~~~sh
+oc --context hubcluster patch managedcluster cckcluster01 -p '{"metadata":{"labels":{"finance":"prod"}}}' --type=merge
+~~~
 
 add new replacement rule
 

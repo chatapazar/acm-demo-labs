@@ -36,3 +36,21 @@ git push origin master
 for cluster in cluster1 cluster2 cluster3;do echo "*** $cluster ***"; oc get deployment --context $cluster -n pacman;done
 
 canary deployment with lab9
+
+Introduction to GitOps and Policies with ACM
+
+add environment=dev --> cluster01, environment=prod --> cluster02
+lab 3
+review namespace, channel, placementrule, application, subscription
+app to dev
+app to prod
+review to allcluster
+
+oc --context hubcluster delete -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/03_subscription-dev.yaml
+
+oc --context hubcluster delete -f https://github.com/chatapazar/acm-app-lifecycle-policies-lab/raw/master/acm-manifests/reversewords-kustomize/05_subscription-prod.yaml
+
+review timewindows feature lab 4
+
+lab 5 dr, cluster replicas = 1
+lab 9 show another way
