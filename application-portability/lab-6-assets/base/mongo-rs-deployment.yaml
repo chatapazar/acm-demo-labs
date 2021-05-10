@@ -49,9 +49,9 @@ spec:
         - name: MONGODB_REPLICA_NAME
           value: "rs0"
         - name: PRIMARY_NODE
-          value: "mongo-cluster1.apps.cckcluster01.sandbox1351.opentlc.com:443"
+          value: "mongo-cluster1.apps.cluster-2f42.2f42.example.opentlc.com:443"
         - name: REPLICA_MEMBERS
-          value: "mongo-cluster1.apps.cckcluster01.sandbox1351.opentlc.com:443,mongo-cluster2.apps.cckcluster02.sandbox1351.opentlc.com:443,mongo-cluster3.apps.cluster-66e8.66e8.sandbox1438.opentlc.com:443"
+          value: "mongo-cluster1.apps.cluster-2f42.2f42.example.opentlc.com:443,mongo-cluster2.apps.cluster-45d8.45d8.sandbox274.opentlc.com:443,mongo-cluster3.apps.cckcluster03.sandbox1535.opentlc.com:443"
         volumeMounts:
         - mountPath: /data/db
           name: mongodb-data
