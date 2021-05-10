@@ -1,5 +1,10 @@
 # Step Demo ACM
 
+## Step 0
+- show ACM Grafana
+- deploy sample app 
+  - https://docs.google.com/document/d/1-Vkq3ADtTd65pYzWWn2IoK4a-rsjdHCnJLRoe8WG6Eg/edit# page 9
+
 ## Step 1
 - prepare to application-portablility, lab 7
 - start lab 8 - application portability
