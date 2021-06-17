@@ -1,7 +1,8 @@
 # Step Demo ACM
 
 ## Step 0
-- show ACM Grafana
+- show ACM Grafana, Let's walk through the steps to integrate Grafana with ACM.
+  - https://docs.google.com/document/d/1-Vkq3ADtTd65pYzWWn2IoK4a-rsjdHCnJLRoe8WG6Eg/edit# page 29
 - deploy sample app 
   - https://docs.google.com/document/d/1-Vkq3ADtTd65pYzWWn2IoK4a-rsjdHCnJLRoe8WG6Eg/edit# page 9
 
