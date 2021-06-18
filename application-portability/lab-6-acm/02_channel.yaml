@@ -4,5 +4,5 @@ metadata:
   name: mongochannel
   namespace: mongo
 spec:
-  pathname: 'https://github.com/chatapazar/labs.git'
+  pathname: 'https://github.com/chatapazar/acm-demo-labs.git'
   type: GitHub
